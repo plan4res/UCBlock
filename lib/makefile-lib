@@ -1,0 +1,70 @@
+##############################################################################
+############################## makefile-lib ##################################
+##############################################################################
+#                                                                            #
+#   makefile of libUCBck - frontend for building the library                 #
+#                                                                            #
+#   Input:  $(UCBckSDR) = the directory where the UCBlock source is          #
+#           If the variable is not defined, "../" is used since it is        #
+#           assumed that the makefile is ran in the lib/ sub-folder.         #
+#                                                                            #
+#   Output: none, just the library being built                               #
+#                                                                            #
+#                             Antonio Frangioni                              #
+#                        Dipartimento di Informatica                         #
+#                            Universita' di Pisa                             #
+#                                                                            #
+##############################################################################
+
+ifndef UCBckDIR
+UCBckDIR = ..
+endif
+
+# module name
+NAME = $(UCBckDIR)/lib/libUCBck.a
+
+# debug switches
+SW = -g -std=c++17
+# production switches
+#SW = -O3 -DNDEBUG -std=c++17
+
+# compiler
+CC = clang++
+
+# default target- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+default: $(NAME)
+
+# build = default - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+build: $(NAME)
+
+# clean - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+clean::
+	rm -f $(NAME)
+
+# install - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+install:
+	mv $(NAME) $(UCBckDIR)/../lib
+	cp $(UCBckH) $(UCBckDIR)/../include
+
+# define & include the necessary modules- - - - - - - - - - - - - - - - - - -
+# if a module is not used in the current configuration, just comment out the
+# corresponding include line
+# each module outputs some macros to be used here:
+# *OBJ is the final object(s) / library
+# *LIB is the external libraries + -L< libdirs >
+# *H   is the list of all include files
+# *INC is the -I< include directories >
+
+# libUCBck (complete with external libraries)
+include $(UCBckDIR)/lib/makefile-c
+
+# archive the library - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+$(NAME): $(UCBckOBJ)
+	ar -ruv $(NAME) $(UCBckOBJ)
+
+########################## End of makefile-lib ###############################
